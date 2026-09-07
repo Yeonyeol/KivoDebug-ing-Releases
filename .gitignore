@@ -1,0 +1,54 @@
+# 공개 저장소: 문서와 승인된 공개 자료만 Git에 보관합니다.
+# 아래 규칙은 보조 장치이며 강제 추가를 막지는 않습니다.
+# 실행 파일과 체크섬은 GitHub Releases 첨부 파일로 배포합니다.
+
+# Unity 프로젝트와 개발 산출물
+/[Aa]ssets/
+/[Pp]ackages/
+/[Pp]roject[Ss]ettings/
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Bb]uild/
+/[Bb]uilds/
+/Tools/
+/Docs/
+/.vs/
+/.idea/
+*.cs
+*.csproj
+*.sln
+*.slnx
+*.meta
+*.pdb
+*.mdb
+*.log
+
+# 배포 바이너리는 Releases에만 첨부
+*.apk
+*.aab
+*.exe
+*.dll
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+SHA256SUMS.txt
+
+# 개인 인증 정보 및 서명 키
+.env
+.env.*
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pem
+*.key
+
+# 로컬 OS 파일
+.DS_Store
+Thumbs.db

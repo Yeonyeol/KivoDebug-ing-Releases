@@ -1,0 +1,60 @@
+name: 버그 제보
+description: 공개 배포본의 오류나 실행 문제를 알려 주세요.
+title: "[버그] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        제보해 주셔서 감사합니다. 이 이슈는 공개됩니다.
+        개인정보, 계정 정보, 인증 토큰이 포함된 로그나 파일은 첨부하지 마세요.
+  - type: input
+    id: version
+    attributes:
+      label: 게임 버전
+      description: 내려받은 릴리스에 표시된 버전을 적어 주세요.
+      placeholder: vX.Y.Z
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 플랫폼
+      options:
+        - Windows
+        - Android
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 실행 환경
+      description: 운영체제 버전과 기기 모델 등 재현에 필요한 환경을 알려 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 과정
+      description: 어떤 화면에서 무엇을 했을 때 문제가 발생했나요?
+      placeholder: |
+        1. 게임을 실행합니다.
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 예상 동작
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 동작
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: 추가 정보 또는 화면
+      description: 선택 사항입니다. 개인정보를 제거한 화면이나 오류 메시지를 첨부하세요.
