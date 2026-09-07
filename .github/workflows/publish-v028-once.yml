@@ -11,181 +11,31 @@ concurrency:
 jobs:
   publish:
     if: >-
-      github.repository == 'Yeonyeol/KivoDebug-ing-Releases' && github.event.head_commit.message == 'ci: publish approved v0.2.8 once kivo-v028-20260907-91c7'
+      github.repository == 'Yeonyeol/KivoDebug-ing-Releases' && github.event.head_commit.message == 'ci: retry approved v0.2.8 publication kivo-v028-20260907-91c7'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - name: Transfer only the three approved release files
+      - name: Run the pinned reviewed transfer with corrected API URL normalization
         env:
           GH_TOKEN: ${{ github.token }}
           GH_PROMPT_DISABLED: '1'
         shell: bash
         run: |
           python3 - <<'PY'
-          import base64, hashlib, json, os, pathlib, subprocess, tempfile, time, urllib.request, urllib.error, urllib.parse, zipfile
-          REPO = "Yeonyeol/KivoDebug-ing-Releases"
-          TAG = "v0.2.8"
-          NONCE = "kivo-v028-20260907-91c7"
-          TARGET = "e3bfacbcdf087710188f1b78e7521142e4bd9ac6"
-          PREFIX = ".release-transfer/" + NONCE
-          EXPECTED = {
-              "KiVO-Debug-ing-v0.2.8-Windows-x64.zip": (625663871, "da1d57f531c0c6f1787ff6cd8428317a4ef5658f1f01c23f20f8a99d5c5a2996"),
-              "KiVO-Debug-ing-v0.2.8-Android-arm64.apk": (636013501, "4e1aea6bc049ff0e24d544ed674219dba55d4678c74c10208b66085be03946a3"),
-              "SHA256SUMS.txt": (210, "1d964addd962f597275020df2004a2fa625088b2d820bc742e061c987b7ba987"),
-          }
-          def api(path, method="GET", data=None):
-              url = "https://api.github.com/repos/" + REPO + "/" + path
-              headers = {"Authorization": "Bearer " + os.environ["GH_TOKEN"], "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": NONCE}
-              request = urllib.request.Request(url, data=None if data is None else json.dumps(data).encode(), headers=headers, method=method)
-              try:
-                  with urllib.request.urlopen(request, timeout=60) as response:
-                      raw = response.read()
-                      return json.loads(raw) if raw else None
-              except urllib.error.HTTPError as e:
-                  if e.code == 404 and method == "GET": return None
-                  raise RuntimeError("GitHub API failed: " + method + " HTTP " + str(e.code)) from None
-
-          def write_json(path, value):
-              return api("contents/" + path, "PUT", {"message": "chore: temporary encrypted release handoff " + NONCE, "content": base64.b64encode(json.dumps(value).encode()).decode(), "branch": "main"})
-
-          def read_json(path):
-              data = api("contents/" + path + "?ref=main")
-              return None if data is None else json.loads(base64.b64decode(data["content"]))
-
-          def cleanup_handoff():
-              for name in ("receiver.json", "payload.json"):
-                  path = PREFIX + "/" + name
-                  try:
-                      data = api("contents/" + path + "?ref=main")
-                      if data:
-                          value = json.loads(base64.b64decode(data["content"]))
-                          if value.get("nonce") == NONCE:
-                              api("contents/" + path, "DELETE", {"message": "chore: remove completed temporary release handoff", "sha": data["sha"], "branch": "main"})
-                  except Exception:
-                      print("Temporary handoff cleanup requires review: " + name, flush=True)
-
-          notes = """## KiVO Debug-ing v0.2.8
-
-          비공식 블루 아카이브 팬게임의 Windows / Android 공개 배포본입니다.
-
-          ### 주요 변경
-          - 보급 노드 추가
-          - 글리치 심도 구현
-          - 타격 피드백 개선 및 게임 수정
-
-          ### 설치
-          **Windows x64:** 첨부된 Windows ZIP을 전체 해제한 뒤 `Kivotos Debug-ing.exe`를 실행하세요. 실행 파일만 따로 옮기지 마세요.
-
-          **Android:** ARM64, Android 8.0 이상을 대상으로 하는 단일 APK입니다. 실제 Android 기기 플레이 검사는 수행하지 않았습니다.
-
-          기존 설치와 저장 데이터의 호환성은 별도 확인이 필요합니다. 업데이트 전에 저장 데이터를 보존하고, 설치를 위해 기존 앱이나 저장 데이터를 무작정 삭제하지 마세요.
-
-          ### 다운로드 파일
-          - `KiVO-Debug-ing-v0.2.8-Windows-x64.zip`
-          - `KiVO-Debug-ing-v0.2.8-Android-arm64.apk`
-          - `SHA256SUMS.txt`
-
-          GitHub의 `Source code` 압축 파일은 배포 안내 문서이며 게임 실행 파일이 아닙니다.
-
-          ### 검증 범위
-          기존 v0.2.8 배포 파일을 재빌드하지 않고 이전했습니다. 원본과 다운로드 파일 및 업로드된 파일의 크기와 SHA-256을 대조합니다. 이번 이전에서 새 Unity 빌드나 실제 기기 플레이 검사는 수행하지 않습니다.
-
-          코덱스의 도움을 받아 개발 중입니다. 원작의 공식 게임이나 공식 배포물은 아닙니다.
-          """
-
-          def main():
-              if os.environ.get("GITHUB_REPOSITORY") != REPO:
-                  raise RuntimeError("Unexpected destination repository")
-              repo = api("")
-              if repo is None or repo.get("private") is not False:
-                  raise RuntimeError("Destination must already be public")
-              releases = api("releases?per_page=100")
-              if not isinstance(releases, list): raise RuntimeError("Unable to inspect existing releases")
-              if any(r["tag_name"] == TAG for r in releases):
-                  raise RuntimeError("Release already exists; no overwrite attempted")
-              with tempfile.TemporaryDirectory(prefix="kivo-v028-") as temp:
-                  root = pathlib.Path(temp)
-                  key, cert = root/"receiver.key", root/"receiver.pem"
-                  subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:3072", "-keyout", str(key), "-out", str(cert), "-nodes", "-days", "1", "-subj", "/CN=" + NONCE], check=True, capture_output=True)
-                  os.chmod(key, 0o600)
-                  write_json(PREFIX + "/receiver.json", {"nonce": NONCE, "repository": REPO, "run_id": os.environ["GITHUB_RUN_ID"], "certificate": cert.read_text()})
-                  print("Receiver ready. Only encrypted, fixed-version handoff data is accepted.", flush=True)
-                  payload = None
-                  for attempt in range(150):
-                      payload = read_json(PREFIX + "/payload.json")
-                      if payload: break
-                      time.sleep(5)
-                  if payload is None: raise RuntimeError("Timed out without an authorized handoff; nothing published")
-                  if payload.get("nonce") != NONCE: raise RuntimeError("Incorrect handoff nonce")
-                  if payload.get("cancel"): raise RuntimeError("Transfer cancelled; nothing published")
-                  envelope = root/"envelope.der"
-                  envelope.write_bytes(base64.b64decode(payload["cms"], validate=True))
-                  decrypted = subprocess.run(["openssl", "cms", "-decrypt", "-inform", "DER", "-in", str(envelope), "-recip", str(cert), "-inkey", str(key)], check=True, capture_output=True).stdout
-                  manifest = json.loads(decrypted)
-                  if manifest.get("nonce") != NONCE or manifest.get("repository") != REPO or manifest.get("tag") != TAG or str(manifest.get("run_id")) != os.environ["GITHUB_RUN_ID"]:
-                      raise RuntimeError("Handoff is not intended for this exact release run")
-                  assets = manifest["assets"]
-                  if len(assets) != len(EXPECTED) or {a["name"] for a in assets} != set(EXPECTED):
-                      raise RuntimeError("Unexpected asset set")
-                  for asset in assets:
-                      name = asset["name"]
-                      expected_size, expected_hash = EXPECTED[name]
-                      if asset.get("size") != expected_size or asset.get("sha256") != expected_hash:
-                          raise RuntimeError("Incorrect source metadata for " + name)
-                      parsed = urllib.parse.urlparse(asset["url"])
-                      if parsed.scheme != "https" or parsed.hostname not in {"release-assets.githubusercontent.com", "objects.githubusercontent.com"}:
-                          raise RuntimeError("Unexpected binary download host")
-                      digest, count = hashlib.sha256(), 0
-                      try:
-                          with urllib.request.urlopen(urllib.request.Request(asset["url"], headers={"User-Agent": NONCE}), timeout=180) as response, (root/name).open("wb") as output:
-                              while True:
-                                  block = response.read(1024*1024)
-                                  if not block: break
-                                  count += len(block)
-                                  if count > expected_size: raise RuntimeError("Download exceeds expected size")
-                                  digest.update(block); output.write(block)
-                      except Exception:
-                          raise RuntimeError("Binary download failed for " + name + "; access URLs were not logged") from None
-                      if count != expected_size or digest.hexdigest() != expected_hash:
-                          raise RuntimeError("Source byte verification failed for " + name)
-                      print("Verified source bytes: " + name + " " + str(count) + " sha256:" + expected_hash, flush=True)
-                  checks = {}
-                  for line in (root/"SHA256SUMS.txt").read_text(encoding="utf-8-sig").splitlines():
-                      if line.strip():
-                          hash_value, filename = line.split(maxsplit=1)
-                          checks[filename.lstrip("*")] = hash_value.lower()
-                  required_checks = {n: h for n, (s, h) in EXPECTED.items() if n != "SHA256SUMS.txt"}
-                  if checks != required_checks: raise RuntimeError("Checksum file contents do not match")
-                  for name in required_checks:
-                      with zipfile.ZipFile(root/name) as archive:
-                          for item in archive.infolist():
-                              path = pathlib.PurePosixPath(item.filename.replace("\\", "/"))
-                              parts = {part.lower() for part in path.parts}
-                              if path.is_absolute() or ".." in parts or ".git" in parts or ".env" in parts or path.suffix.lower() in {".keystore", ".jks", ".p12", ".pfx", ".csproj", ".sln"}:
-                                  raise RuntimeError("Archive requires private-file review before publication")
-                  (root/"notes.md").write_text(notes, encoding="utf-8")
-                  args = ["gh", "release", "create", TAG] + [str(root/name) for name in EXPECTED] + ["--repo", REPO, "--target", TARGET, "--draft", "--title", "KiVO Debug-ing v0.2.8 | Windows / Android", "--notes-file", str(root/"notes.md")]
-                  subprocess.run(args, check=True)
-                  release_list = api("releases?per_page=100")
-                  release = next((r for r in release_list if r["tag_name"] == TAG), None)
-                  if not release or not release.get("draft"): raise RuntimeError("Expected uploaded draft not found")
-                  uploaded = {a["name"]: a for a in release["assets"]}
-                  if set(uploaded) != set(EXPECTED): raise RuntimeError("Draft asset set incomplete; draft left unpublished")
-                  for name, (size, digest) in EXPECTED.items():
-                      if uploaded[name].get("size") != size or uploaded[name].get("digest") != "sha256:" + digest or uploaded[name].get("state") != "uploaded":
-                          raise RuntimeError("Uploaded draft digest mismatch; draft left unpublished")
-                  subprocess.run(["gh", "release", "edit", TAG, "--repo", REPO, "--draft=false", "--latest"], check=True)
-                  final = api("releases/tags/" + TAG)
-                  if final is None or final.get("draft") or final.get("prerelease"):
-                      raise RuntimeError("Publication verification failed")
-                  print("PUBLISHED " + final["html_url"], flush=True)
-                  for asset in final["assets"]:
-                      print(json.dumps({"name": asset["name"], "size": asset["size"], "digest": asset.get("digest"), "url": asset["browser_download_url"]}), flush=True)
-          try:
-              main()
-          except Exception as exc:
-              print("Release transfer failed: " + (str(exc) if isinstance(exc, RuntimeError) else type(exc).__name__), flush=True)
-              raise SystemExit(1)
-          finally:
-              cleanup_handoff()
+          import base64, hashlib, json, subprocess, textwrap
+          endpoint = 'repos/Yeonyeol/KivoDebug-ing-Releases/contents/.github/workflows/publish-v028-once.yml?ref=4767cfefb216a69e7cabc9edde884f4cbd0ca673'
+          response = subprocess.run(['gh', 'api', endpoint], check=True, capture_output=True)
+          raw = base64.b64decode(json.loads(response.stdout)['content'])
+          expected = 'c61e5ce5f8636209fb91cfd0c38b0f9e5c803424'
+          actual = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+          if actual != expected:
+              raise RuntimeError('Pinned transfer script changed')
+          body = raw.decode().split("          python3 - <<'PY'\n", 1)[1].rsplit('          PY\n', 1)[0]
+          script = textwrap.dedent(body)
+          old = 'url = "https://api.github.com/repos/" + REPO + "/" + path'
+          new = 'url = ("https://api.github.com/repos/" + REPO + "/" + path).rstrip("/")'
+          if script.count(old) != 1:
+              raise RuntimeError('Unexpected API normalization patch target')
+          script = script.replace(old, new)
+          exec(compile(script, '<reviewed-v028-transfer>', 'exec'))
           PY
