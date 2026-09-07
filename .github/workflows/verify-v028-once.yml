@@ -1,0 +1,53 @@
+name: One-time anonymous v0.2.8 download verification
+'on':
+  push:
+    branches: [main]
+    paths: [.github/workflows/verify-v028-once.yml]
+permissions: {}
+jobs:
+  verify:
+    if: >-
+      github.repository == 'Yeonyeol/KivoDebug-ing-Releases' && github.event.head_commit.message == 'ci: verify anonymous v0.2.8 downloads once 91c7'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Download and hash all three files without any authentication
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import concurrent.futures, hashlib, json, urllib.request
+          repo = 'Yeonyeol/KivoDebug-ing-Releases'
+          headers = {'User-Agent': 'KiVO-anonymous-release-verification'}
+          with urllib.request.urlopen(urllib.request.Request('https://api.github.com/repos/' + repo + '/releases/tags/v0.2.8', headers=headers), timeout=30) as response:
+              release = json.load(response)
+          if release.get('draft') or release.get('prerelease'):
+              raise RuntimeError('Expected a published release')
+          expected = {
+              'KiVO-Debug-ing-v0.2.8-Windows-x64.zip': (625663871, 'da1d57f531c0c6f1787ff6cd8428317a4ef5658f1f01c23f20f8a99d5c5a2996'),
+              'KiVO-Debug-ing-v0.2.8-Android-arm64.apk': (636013501, '4e1aea6bc049ff0e24d544ed674219dba55d4678c74c10208b66085be03946a3'),
+              'SHA256SUMS.txt': (210, '1d964addd962f597275020df2004a2fa625088b2d820bc742e061c987b7ba987'),
+          }
+          if {a['name'] for a in release['assets']} != set(expected):
+              raise RuntimeError('Unexpected public asset set')
+          def verify(asset):
+              name = asset['name']
+              size, wanted = expected[name]
+              if asset.get('size') != size or asset.get('digest') != 'sha256:' + wanted:
+                  raise RuntimeError('Public metadata mismatch: ' + name)
+              digest, count = hashlib.sha256(), 0
+              with urllib.request.urlopen(urllib.request.Request(asset['browser_download_url'], headers=headers), timeout=180) as response:
+                  if response.status != 200: raise RuntimeError('Public download failed')
+                  while True:
+                      block = response.read(1024 * 1024)
+                      if not block: break
+                      count += len(block)
+                      if count > size: raise RuntimeError('Unexpected download length')
+                      digest.update(block)
+              if count != size or digest.hexdigest() != wanted:
+                  raise RuntimeError('Public download byte verification failed: ' + name)
+              return {'name': name, 'bytes': count, 'sha256': digest.hexdigest(), 'anonymous_download': 'passed'}
+          with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+              for result in pool.map(verify, release['assets']):
+                  print('ANONYMOUS_DOWNLOAD_OK ' + json.dumps(result), flush=True)
+          print('VERIFIED_PUBLIC_RELEASE ' + release['html_url'], flush=True)
+          PY
