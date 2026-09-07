@@ -6,19 +6,19 @@ Unity로 제작 중인 비공식 블루 아카이브 팬게임입니다. 이 저
 
 ## 다운로드
 
-[공개 릴리스 및 다운로드 목록](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases)
+**현재 공개 버전: v0.2.8**
 
-**현재 이 저장소의 첫 공개 릴리스를 준비 중입니다.** 릴리스 목록에 게시된 버전만 공개 배포본입니다. 비공개 개발 버전이나 문서 변경은 공개 배포 완료를 뜻하지 않습니다.
+[최신 공개 릴리스와 업데이트 내용](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/latest) · [전체 배포 목록](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases)
 
-릴리스가 게시되면 해당 페이지의 **Assets**에서 플랫폼에 맞는 첨부 파일을 선택하세요.
-
-| 파일 | 용도 |
+| 다운로드 | 용도 |
 | --- | --- |
-| Windows ZIP | 압축을 전체 해제한 뒤 포함된 실행 파일로 플레이합니다. 실행 파일만 따로 옮기지 마세요. |
-| Android APK | 해당 릴리스의 지원 기기와 설치 안내를 확인한 뒤 설치합니다. |
-| SHA256SUMS.txt | 배포 파일의 SHA-256 체크섬입니다. 다운로드 무결성 확인에 사용합니다. |
+| [Windows x64 ZIP](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.8/KiVO-Debug-ing-v0.2.8-Windows-x64.zip) | 압축을 전체 해제한 뒤 `Kivotos Debug-ing.exe`를 실행합니다. 실행 파일만 따로 옮기지 마세요. |
+| [Android ARM64 APK](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.8/KiVO-Debug-ing-v0.2.8-Android-arm64.apk) | Android 8.0 이상을 대상으로 하는 단일 APK입니다. 실제 Android 기기 플레이 검사는 수행하지 않았습니다. |
+| [SHA256SUMS.txt](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.8/SHA256SUMS.txt) | 배포 파일의 SHA-256 체크섬입니다. 다운로드 무결성 확인에 사용합니다. |
 
-GitHub가 자동 표시하는 `Source code (zip)`과 `Source code (tar.gz)`는 이 공개 저장소의 문서 묶음이며 게임 설치 파일이 아닙니다. 별도로 첨부된 Windows ZIP 또는 Android APK를 받으세요.
+v0.2.8에는 보급 노드 추가, 글리치 심도, 타격 피드백 개선 및 게임 수정이 포함되어 있습니다. 세부 내용과 검증 범위는 [v0.2.8 릴리스 노트](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/tag/v0.2.8)를 확인하세요.
+
+GitHub가 자동 표시하는 `Source code (zip)`과 `Source code (tar.gz)`는 이 공개 저장소의 문서 묶음이며 게임 설치 파일이 아닙니다. 위 링크 또는 릴리스 페이지의 **Assets**에서 Windows ZIP 또는 Android APK를 받으세요.
 
 지원 환경, 저장 데이터 호환성, 설치 방법과 알려진 문제는 **받으려는 버전의 릴리스 노트**를 기준으로 합니다. 게임 저장 데이터를 지우거나 기존 Android 앱을 삭제하기 전에 해당 버전의 업데이트 주의사항을 확인하세요.
 
