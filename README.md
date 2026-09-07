@@ -14,6 +14,7 @@
 **현재 버전: v0.2.8**
 
 | 다운로드 | 
+
 | [Windows x64 ZIP](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.8/KiVO-Debug-ing-v0.2.8-Windows-x64.zip) | 압축을 전체 해제한 뒤 `Kivotos Debug-ing.exe`를 실행하세요. 실행 파일만 따로 옮기지 마세요. |
 
 | [Android ARM64 APK](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.8/KiVO-Debug-ing-v0.2.8-Android-arm64.apk) | Android 8.0 이상을 대상으로 하는 단일 APK. 실제 Android 기기 플레이 테스트는 해보지 않았습니다. 버그 엄청 많을듯? |
