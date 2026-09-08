@@ -19,12 +19,12 @@
 대략 압축 풀면 1.34기가 정도.
 
 
-| [Android ARM64 APK](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.8/KiVO-Debug-ing-v0.2.8-Android-arm64.apk) | Android 8.0 이상을 대상으로 하는 단일 APK. 실제 Android 기기 플레이 테스트는 해보지 않았습니다. 버그 엄청 많을듯? |
+| [Android ARM64 APK](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.8/KiVO-Debug-ing-v0.2.8-Android-arm64.apk) | Android 8.0 이상을 대상으로 하는 단일 APK. 테스트가 매우 적습니다. 버그 엄청 많을듯? |
 
 
 
 ## 업데이트 방침
-* 다음 대규모 업데이트 시(일정 미정)
+**다음 대규모 업데이트(일정 미정)**
 - 플레이어블 학생 [케이] 추가 예정.
 - 신규 보스 [시로코*테러] 추가 예정.
 - 글리치 존은 심도 고층(7 이상) 전용(4스테이지)으로 변경(보스 고정)
@@ -32,7 +32,7 @@
 - [게헨나]는 추가는 하고 싶은데 관련 아이디어가 없음.
 
 
-* 소규모 업데이트 시
+**소규모 업데이트**
 - 버그 수정.
 
 
