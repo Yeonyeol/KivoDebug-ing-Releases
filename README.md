@@ -11,15 +11,17 @@
 
 ## 다운로드
 
-**현재 버전: v0.2.8**
+**현재 버전: v0.2.9**
 
 | 다운로드 | 
 
-| [Windows x64 ZIP](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.8/KiVO-Debug-ing-v0.2.8-Windows-x64.zip) | 압축을 전체 해제한 뒤 `Kivotos Debug-ing.exe`를 실행하세요. 실행 파일만 따로 옮기지 마세요. |
+| [Windows x64 ZIP](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.9/KiVO-Debug-ing-v0.2.9-Windows-x64.zip) | 압축을 전체 해제한 뒤 `Kivotos Debug-ing.exe`를 실행하세요. 실행 파일만 따로 옮기지 마세요. |
 대략 압축 풀면 1.34기가 정도.
 
 
-| [Android ARM64 APK](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.8/KiVO-Debug-ing-v0.2.8-Android-arm64.apk) | Android 8.0 이상을 대상으로 하는 단일 APK. 테스트가 매우 적습니다. 버그 엄청 많을듯? |
+| [Android ARM64 APK](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.9/KiVO-Debug-ing-v0.2.9-Android-arm64.apk) | Android 8.0 이상을 대상으로 하는 단일 APK. 실제 Android 기기 플레이는 미검증입니다. |
+
+[v0.2.9 업데이트 내역](CHANGELOG.md) · [최신 릴리스와 체크섬](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/latest)
 
 
 
@@ -37,8 +39,8 @@
 
 
 ## 알려진 버그
-- 적 처치 후 게임 진행이 안되는 버그(원인 파악 못함, 아리스는 해당 버그에서 상당히 자유로운 편)
-- 
+- v0.2.9에서 이벤트 전투 승리 후 보상 선택창이 전장 뒤에 가려져 진행할 수 없던 문제를 수정했습니다.
+- 카드 규칙 검토는 계속 진행 중이며, 모든 카드와 보스의 문제가 해결된 버전은 아닙니다.
 
 ## 문제 제보
 
