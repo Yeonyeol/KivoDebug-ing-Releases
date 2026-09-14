@@ -20,7 +20,7 @@
 
 | [Android ARM64 APK](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/download/v0.2.9/KiVO-Debug-ing-v0.2.9-Android-arm64.apk) | Android 8.0 이상을 대상으로 하는 단일 APK. 실제 Android 기기 플레이는 미검증입니다. |
 
-[v0.2.9 업데이트 내역](CHANGELOG.md) · [최신 릴리스와 체크섬](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/latest)
+[최신 릴리스](https://github.com/Yeonyeol/KivoDebug-ing-Releases/releases/latest)
 
 
 
